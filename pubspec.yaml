@@ -43,6 +43,8 @@ dependencies:
   flutter_map: ^7.0.2
   geocoding: ^3.0.0
   camera: ^0.10.1
+  image_gallery_saver: ^2.0.3
+  path_provider: ^2.1.4
   # camera_android_camerax: ^0.6.8+2
 
 dev_dependencies:
