@@ -4,26 +4,46 @@ import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:geo_tag/core/shared_prefs/shared_prefs.dart';
 import 'package:image_gallery_saver/image_gallery_saver.dart';
 import 'package:path_provider/path_provider.dart';
 
-class ResultScreen extends StatelessWidget {
+class ResultScreen extends StatefulWidget {
   final String imagePath;
   final String address;
   final String dateTime;
   final String latitude;
   final String longitude;
+  final bool isUsernameEnabled;
 
-  ResultScreen({
-    Key? key,
+  const ResultScreen({
+    super.key,
     required this.imagePath,
     required this.address,
     required this.dateTime,
     required this.latitude,
     required this.longitude,
-  }) : super(key: key);
+    required this.isUsernameEnabled,
+  });
 
+  @override
+  State<ResultScreen> createState() => _ResultScreenState();
+}
+
+class _ResultScreenState extends State<ResultScreen> {
   final GlobalKey _globalKey = GlobalKey();
+  String? username;
+
+  @override
+  void initState() {
+    widget.isUsernameEnabled ? _getUsername() : null;
+    super.initState();
+  }
+
+  Future<void> _getUsername() async {
+    username = await SharedPrefs.getUsernameSharedPreference();
+    setState(() {});
+  }
 
   Future<void> _saveImageWithText(BuildContext context) async {
     try {
@@ -45,12 +65,12 @@ class ResultScreen extends StatelessWidget {
 
       // Show a message to the user
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Image saved to gallery')),
+        const SnackBar(content: Text('Image saved to gallery')),
       );
     } catch (e) {
       print('Error saving image: $e');
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Failed to save image')),
+        const SnackBar(content: Text('Failed to save image')),
       );
     }
   }
@@ -83,9 +103,9 @@ class ResultScreen extends StatelessWidget {
           key: _globalKey,
           child: Stack(
             children: [
-              if (imagePath.isNotEmpty)
+              if (widget.imagePath.isNotEmpty)
                 Image.file(
-                  File(imagePath),
+                  File(widget.imagePath),
                 ),
               Positioned(
                 bottom: 40,
@@ -101,7 +121,7 @@ class ResultScreen extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Address: $address',
+                        'Address: ${widget.address}',
                         textAlign: TextAlign.center,
                         style: const TextStyle(
                           color: Colors.white,
@@ -111,7 +131,7 @@ class ResultScreen extends StatelessWidget {
                       Row(
                         children: [
                           Text(
-                            'Latitude: $latitude,',
+                            'Latitude: ${widget.latitude},',
                             textAlign: TextAlign.center,
                             style: const TextStyle(
                               color: Colors.white,
@@ -119,7 +139,7 @@ class ResultScreen extends StatelessWidget {
                             ),
                           ),
                           Text(
-                            ' Longitude: $longitude',
+                            ' Longitude: ${widget.longitude}',
                             textAlign: TextAlign.center,
                             style: const TextStyle(
                               color: Colors.white,
@@ -129,7 +149,7 @@ class ResultScreen extends StatelessWidget {
                         ],
                       ),
                       Text(
-                        'Date: $dateTime',
+                        'Date: ${widget.dateTime}',
                         textAlign: TextAlign.center,
                         style: const TextStyle(
                           color: Colors.white,
@@ -140,6 +160,40 @@ class ResultScreen extends StatelessWidget {
                   ),
                 ),
               ),
+              if (widget.isUsernameEnabled)
+                Positioned(
+                  top: 20,
+                  right: 0,
+                  child: Container(
+                    margin: const EdgeInsets.symmetric(horizontal: 20),
+                    padding: const EdgeInsets.symmetric(
+                        vertical: 10, horizontal: 10),
+                    decoration: BoxDecoration(
+                      color: Colors.black.withOpacity(0.6),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Row(
+                      children: [
+                        const Icon(
+                          Icons.camera,
+                          color: Colors.white,
+                        ),
+                        const SizedBox(
+                          width: 4,
+                        ),
+                        Text(
+                          'Clicked by $username',
+                          textAlign: TextAlign.center,
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
             ],
           ),
         ),

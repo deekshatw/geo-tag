@@ -3,9 +3,9 @@ import 'package:geo_tag/core/shared_prefs/shared_prefs.dart';
 import 'package:geo_tag/core/widgets/primary_button.dart';
 import 'package:geo_tag/features/auth/screens/login_screen.dart';
 import 'package:geo_tag/features/camera/screens/camera_screen.dart';
+import 'package:geocoding/geocoding.dart'; // Import geocoding package
 import 'package:geolocator/geolocator.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'package:geocoding/geocoding.dart'; // Import geocoding package
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -17,6 +17,7 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   String? username;
   bool _isLoading = false;
+  bool _isUsernameEnabled = false;
 
   @override
   void initState() {
@@ -29,7 +30,7 @@ class _HomeScreenState extends State<HomeScreen> {
     setState(() {});
   }
 
-  Future<void> _openCamera() async {
+  Future<void> _openCamera(bool isUsernameEnabled) async {
     setState(() {
       _isLoading = true;
     });
@@ -57,7 +58,7 @@ class _HomeScreenState extends State<HomeScreen> {
           context,
           MaterialPageRoute(
             builder: (_) => CameraScreen(
-              // address: address,
+              isUsernameEnabled: isUsernameEnabled,
             ),
           ),
         );
@@ -116,14 +117,39 @@ class _HomeScreenState extends State<HomeScreen> {
                   Text(
                     'Press button below to open camera!',
                     style: TextStyle(
-                      fontSize: 15,
-                      fontWeight: FontWeight.w400,
+                      fontSize: 17,
+                      fontWeight: FontWeight.w500,
                       color: Colors.black.withOpacity(0.8),
                     ),
                   ),
+                  const SizedBox(
+                    height: 10,
+                  ),
+                  Row(
+                    children: [
+                      Checkbox(
+                        value: _isUsernameEnabled,
+                        onChanged: (value) {
+                          setState(() {
+                            _isUsernameEnabled = value!;
+                          });
+                        },
+                      ),
+                      Text(
+                        'Do you want to display your user name?',
+                        style: TextStyle(
+                          fontSize: 15,
+                          fontWeight: FontWeight.normal,
+                          color: Colors.black.withOpacity(0.8),
+                        ),
+                      )
+                    ],
+                  ),
                   const SizedBox(height: 20),
                   PrimaryButton(
-                    onTap: _openCamera,
+                    onTap: () {
+                      _openCamera(_isUsernameEnabled);
+                    },
                     label: 'Open Camera',
                   ),
                 ],

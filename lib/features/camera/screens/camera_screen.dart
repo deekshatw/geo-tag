@@ -6,6 +6,9 @@ import 'package:geolocator/geolocator.dart';
 import 'package:intl/intl.dart';
 
 class CameraScreen extends StatefulWidget {
+  final bool isUsernameEnabled;
+
+  const CameraScreen({super.key, required this.isUsernameEnabled});
   @override
   _CameraScreenState createState() => _CameraScreenState();
 }
@@ -104,6 +107,7 @@ class _CameraScreenState extends State<CameraScreen> {
             dateTime: _currentDateTime ?? 'Unknown time',
             latitude: _currentPosition?.latitude.toString() ?? 'Unknown',
             longitude: _currentPosition?.longitude.toString() ?? 'Unknown',
+            isUsernameEnabled: widget.isUsernameEnabled,
           ),
         ),
       );
